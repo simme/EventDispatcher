@@ -60,12 +60,13 @@ class pewEventDispatcher {
 	 * @param		object		subject
 	 * @param		string		name
 	 * @param		array		parameters
+	 * @param		string		event type, let's you define your own event class
 	 *
 	 * @return		pewEvent
 	 */
-	public function createEvent($subject, $name, $params = array()) {
+	public function createEvent($subject, $name, $params = array(), $eventType = 'pewEvent') {
 		if(!array_key_exists($name, $this->events)) {
-			$this->events[$name] = new pewEvent($subject, $name, $params);
+			$this->events[$name] = new $eventType($subject, $name, $params);
 			return $this->events[$name];
 		}
 		else {
