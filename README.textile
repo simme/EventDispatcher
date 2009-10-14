@@ -4,6 +4,7 @@ EventDispatcher is a small implementation of the observer design pattern for PHP
 
 h2. Usage
 
+<pre>
 <code>
 <?php
 	include('path/to/EventDispatcher.class.php');
@@ -96,6 +97,7 @@ h2. Usage
 	$blog->post();
 ?>
 </code>
+</pre>
 
 As you can se the class does not act as a singleton. This is because sometimes you want several dispatchers. I prefer Dependancy Injection.
 Of course you could store a referece in some global registry. But this approach gives a more decoupled solution.
