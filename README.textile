@@ -1,1 +1,2 @@
 h1. EventDispatcher - Observer Implementation
+EventDispatcher is a small implementation of the observer design pattern for PHP5.
