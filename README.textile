@@ -1,3 +1,103 @@
 h1. EventDispatcher - Observer Implementation
 
 EventDispatcher is a small implementation of the observer design pattern for PHP5.
+
+h2. Usage
+
+<code>
+<?php
+	include('path/to/EventDispatcher.class.php');
+	$events = new pewEventDispatcher();
+	
+	
+	class Blog {
+		private $events = NULL;
+		
+		public function __construct($events) {
+			$this->events = $events;
+			
+			// Creates a new event called posted and $this as the subject
+			// The third parameters is optional and takes an array of parameters
+			// that is later passed to callbacks.
+			$this->events->createEvent($this, 'blog.posted');
+		}
+		
+		/**
+		 * Saves a blog post
+		 */
+		public function post() {
+			// Get the event and add the parameters the listeners
+			// could need. Reason for creating the event in the
+			// constructor is that we want other classes to have
+			// a chance att listening.
+			$event = $this->events->getEvent('blog.posted');
+			
+			// Event implements ArrayAccess
+			$event['title'] = 'A new post';
+			$event['body'] = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.';
+			$event['date'] = date('Y-m-d');
+			
+			// Notify listeners that the event is triggering
+			$this->events->notify($event);
+		}
+		
+		/**
+		 * Get author
+		 */
+		public function getAuthor() {
+			return 'Simon Ljungberg';
+		}
+	}
+	
+	/**
+	 * Notifies email list of a new post
+	 */
+	class EmailNotify {
+		private $events = NULL;
+		
+		public function __construct($events) {
+			$this->events = $events;
+			
+			// Tell EventDispatcher that we want to be notified of any blog posts
+			$this->events->addListener('blog.posted', array(get_class($this), 'sendNote'));
+		}
+		
+		/**
+		 * Send notification
+		 *
+		 * Parameters are those we set in Blog::post()
+		 * The names actually don't have any meaning for the callback.
+		 * arguments are passed the order they were added.
+		 *
+		 * Name being: $event['title'] for example, title is the name
+		 *
+		 * Names can be useful though if you want to modify it
+		 * from another end before using it.
+		 *
+		 * The event itself are always sent as the first parameter.
+		 * This means you actually don't have to have the other
+		 * arguments but can extract them directly from the
+		 * event.
+		 */
+		public function sendNote($event, $title, $body, $date) {
+			
+			$to = "random@email.com";
+			// As seen on the end of this line, you can call methods from the one who created the event
+			$subject = "[NEW POST] $date - $title; By: " . $event->getSubject()->getAuthor();
+			echo $to . '<br />' . $subject . '<br />' . $body;
+			
+			// Use mail() or something to send the note!
+		}
+	}
+	
+	// Now just instantiate some objects and call the post method
+	$blog = new Blog($events);
+	$note = new EmailNotify($events);
+	$blog->post();
+?>
+</code>
+
+As you can se the class does not act as a singleton. This is because sometimes you want several dispatchers. I prefer Dependancy Injection.
+Of course you could store a referece in some global registry. But this approach gives a more decoupled solution.
+
+API documents coming soon.
