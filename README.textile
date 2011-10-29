@@ -9,20 +9,20 @@ h2. Usage
 <?php
 	include('path/to/EventDispatcher.class.php');
 	$events = new pewEventDispatcher();
-	
-	
+
+
 	class Blog {
 		private $events = NULL;
-		
+
 		public function __construct($events) {
 			$this->events = $events;
-			
+
 			// Creates a new event called posted and $this as the subject
 			// The third parameters is optional and takes an array of parameters
 			// that is later passed to callbacks.
 			$this->events->createEvent($this, 'blog.posted');
 		}
-		
+
 		/**
 		 * Saves a blog post
 		 */
@@ -32,16 +32,16 @@ h2. Usage
 			// constructor is that we want other classes to have
 			// a chance att listening.
 			$event = $this->events->getEvent('blog.posted');
-			
+
 			// Event implements ArrayAccess
 			$event['title'] = 'A new post';
 			$event['body'] = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.';
 			$event['date'] = date('Y-m-d');
-			
+
 			// Notify listeners that the event is triggering
 			$this->events->notify($event);
 		}
-		
+
 		/**
 		 * Get author
 		 */
@@ -49,20 +49,20 @@ h2. Usage
 			return 'Simon Ljungberg';
 		}
 	}
-	
+
 	/**
 	 * Notifies email list of a new post
 	 */
 	class EmailNotify {
 		private $events = NULL;
-		
+
 		public function __construct($events) {
 			$this->events = $events;
-			
+
 			// Tell EventDispatcher that we want to be notified of any blog posts
 			$this->events->addListener('blog.posted', array(get_class($this), 'sendNote'));
 		}
-		
+
 		/**
 		 * Send notification
 		 *
@@ -81,16 +81,16 @@ h2. Usage
 		 * event.
 		 */
 		public function sendNote($event, $title, $body, $date) {
-			
+
 			$to = "random@email.com";
 			// As seen on the end of this line, you can call methods from the one who created the event
 			$subject = "[NEW POST] $date - $title; By: " . $event->getSubject()->getAuthor();
 			echo $to . '<br />' . $subject . '<br />' . $body;
-			
+
 			// Use mail() or something to send the note!
 		}
 	}
-	
+
 	// Now just instantiate some objects and call the post method
 	$blog = new Blog($events);
 	$note = new EmailNotify($events);
