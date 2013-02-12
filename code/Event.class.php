@@ -8,9 +8,9 @@
  * @author		Simon Ljungberg <simon.ljungberg@nimnim.se>
  * @packages	pewpew
  * @subpackage	event_dispatcher
- */ 
+ */
 class pewEvent implements pewEventInterface, ArrayAccess {
-	
+
 	/**
 	 * Event name
 	 *
@@ -18,7 +18,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access 	protected
 	 */
 	protected $name		= '';
-	
+
 	/**
 	 * Has this event been run?
 	 *
@@ -26,7 +26,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access 	protected
 	 */
 	protected $hasRun	= false;
-	
+
 	/**
 	 * Subject
 	 * The one who created the event
@@ -35,7 +35,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access 	protected
 	 */
 	protected $subject;
-	
+
 	/**
 	 * Parameters to pass to listeners
 	 *
@@ -43,7 +43,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access 	protected
 	 */
 	protected $params	= array();
-	
+
 	/**
 	 * Return value
 	 *
@@ -51,7 +51,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access 	protected
 	 */
 	protected $value	= null;
-	
+
 	/**
 	 * Listeners
 	 * The callback methods to be run on notify
@@ -60,8 +60,8 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @access	protected
 	 */
 	protected $listeners = array();
-	
-	
+
+
 	/**
 	 * Creates a new event
 	 *
@@ -78,7 +78,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 		$this->name 	= (string)$name;
 		$this->params 	= (array)$params;
 	}
-	
+
 	/**
 	 * Return the event name
 	 *
@@ -89,7 +89,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function getName() {
 		return $this->name;
 	}
-	
+
 	/**
 	 * Return the subject
 	 *
@@ -100,7 +100,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function getSubject() {
 		return $this->subject;
 	}
-	
+
 	/**
 	 * Return the params
 	 *
@@ -111,7 +111,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function getParams() {
 		return $this->params;
 	}
-	
+
 	/**
 	 * Gets the return value
 	 *
@@ -122,7 +122,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function getReturnValue() {
 		return $this->value;
 	}
-	
+
 	/**
 	 * Checks wheter event has ben run or not
 	 *
@@ -133,7 +133,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function hasRun() {
 		return $this->hasRun;
 	}
-	
+
 	/**
 	 * Returns a list of listeners
 	 *
@@ -144,7 +144,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function getListeners() {
 		return $this->listeners;
 	}
-	
+
 	/**
 	 * Set as run
 	 *
@@ -155,7 +155,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function setHasRun() {
 		$this->hasRun = true;
 	}
-	
+
 	/**
 	 * Sets the return value
 	 *
@@ -170,7 +170,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 		if($wipe) {
 			$this->value = array();
 		}
-	
+
 		if(is_array($value)) {
 			foreach($value as $key => $val) {
 				$this->value[$key] = $val;
@@ -180,7 +180,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 			$this->value[] = $value;
 		}
 	}
-	
+
 	/**
 	 * Add listener to this event
 	 *
@@ -191,17 +191,17 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	 * @return		void
 	 */
 	public function addListener($callable) {
-	
+
 		if(is_array($callable)) {
 			$id = $callable[0] . $callable[1];
 		}
 		elseif(is_string($callable)) {
 			$id = $callable;
 		}
-		
+
 		$this->listeners[$id] = $callable;
 	}
-	
+
 	/**
 	 * Notify all listeners (run callbacks)
 	 *
@@ -215,10 +215,10 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 		foreach($this->listeners as $listener) {
 			$this->setReturnValue(call_user_func_array($listener, $params));
 		}
-		
+
 		return $this->value;
 	}
-	
+
 	/**
 	 * Has listeners?
 	 *
@@ -229,7 +229,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function hasListeners() {
 		return !empty($this->listeners);
 	}
-	
+
 	/**
 	 * Reset event, allowing it to run more then once
 	 * Basically calls setHasRun(false)
@@ -252,7 +252,7 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function offsetExists($name) {
 		return array_key_exists($name, $this->params);
 	}
-	
+
 	/**
 	 * Returns a parameter value (implements the ArrayAccess interface).
 	 *
@@ -264,20 +264,20 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 		if (!array_key_exists($name, $this->params)) {
 	  		throw new InvalidArgumentException(sprintf('The event "%s" has no "%s" parameter.', $this->name, $name));
 		}
-	
+
 		return $this->params[$name];
 	}
-	
+
 	/**
 	 * Sets a parameter (implements the ArrayAccess interface).
 	 *
 	 * @param 		string  	The parameter name
-	 * @param 		mixed 		The parameter value 
+	 * @param 		mixed 		The parameter value
 	 */
 	public function offsetSet($name, $value) {
 		$this->params[$name] = $value;
 	}
-	
+
 	/**
 	 * Removes a parameter (implements the ArrayAccess interface).
 	 *
@@ -286,5 +286,5 @@ class pewEvent implements pewEventInterface, ArrayAccess {
 	public function offsetUnset($name) {
 		unset($this->params[$name]);
 	}
-	
+
 }

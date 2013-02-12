@@ -9,7 +9,7 @@
  * @packages	pewpew
  * @subpackage	event_dispatcher
  */
- 
+
 require_once(dirname(__FILE__) . '/Event.interface.php');
 require_once(dirname(__FILE__) . '/Event.class.php');
 
@@ -24,7 +24,7 @@ class pewEventDispatcher {
 	 * @access 	protected
 	 */
 	protected $events		= array();
-	
+
 	/**
 	 * The listeners
 	 *
@@ -32,8 +32,8 @@ class pewEventDispatcher {
 	 * @access 	protected
 	 */
 	protected $listeners	= array();
-	
-	
+
+
 	/**
 	 * Adds an event to the registry
 	 *
@@ -47,11 +47,11 @@ class pewEventDispatcher {
 		if(array_key_exists($event->getName(), $this->events)) {
 			return false;
 		}
-		
+
 		$this->events[$event->getName()] = $event;
 		return true;
 	}
-	
+
 	/**
 	 * Create a new event
 	 *
@@ -73,7 +73,7 @@ class pewEventDispatcher {
 			throw new pewEventDispatcherException('Event ' . $name . ' already exsists.');
 		}
 	}
-	
+
 	/**
 	 * Removes an event from the registry
 	 * Note: this does not remove the event object
@@ -91,15 +91,15 @@ class pewEventDispatcher {
 		elseif(!is_string($event)) {
 			throw new pewEventDispatcherException('Event to remove must be object of type pewEvent or string.');
 		}
-		
+
 		if(array_key_exists($event, $this->events)) {
 			unset($this->events[$event]);
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Get an event object by name
 	 *
@@ -114,7 +114,7 @@ class pewEventDispatcher {
 			return $this->events[$name];
 		}
 	}
-	
+
 	/**
 	 * Add listener to event
 	 *
@@ -129,19 +129,19 @@ class pewEventDispatcher {
 		if(!is_string($ename)) {
 			throw new pewEventDispatcherException('Event name must be string (add listener).');
 		}
-		
+
 		if(!is_callable($callable)) {
 			throw new pewEventDispatcherException('Event listener is not callable.');
 		}
-		
+
 		if(!array_key_exists($ename, $this->events)) {
 			throw new pewEventDispatcherException('No event named ' . $ename . ' exists!');
 		}
-		
+
 		$this->events[$ename]->addListener($callable);
 		return true;
 	}
-	
+
 	/**
 	 * Notifies all listeners of a given event that the event has triggered
 	 *
@@ -153,19 +153,19 @@ class pewEventDispatcher {
 	 */
 	public function notify($event) {
 		$event = $this->strToEvent($event);
-		
+
 		$this->checkEvent($event, 'Invalid event - can\'t notify.');
-		
+
 		if($event->hasRun()) {
 			throw new pewEventDispatcherException('Event ' . $event->getName() . ' has already been run. Reset it before running again.');
 		}
-		
+
 		$event->notify();
 		$event->setHasRun(true);
-		
+
 		return $event;
 	}
-	
+
 	/**
 	 * Turn a string into an event
 	 *
@@ -186,7 +186,7 @@ class pewEventDispatcher {
 			return NULL;
 		}
 	}
-	
+
 	/**
 	 * Check validatidy of an event
 	 * Throws an exception if the event is invalid
@@ -204,7 +204,7 @@ class pewEventDispatcher {
 			throw new pewEventDispatcherException($msg);
 		}
 	}
-	
+
 	/**
 	 * Does an event have listeners?
 	 *
@@ -216,12 +216,12 @@ class pewEventDispatcher {
 	 */
 	public function hasListeners($event) {
 		$event = $this->strToEvent($event);
-		
+
 		$this->checkEvent($event, 'Invalid event - can\'t check listeners.');
-		
+
 		return $event->hasListeners();
 	}
-	
+
 	/**
 	 * Get all listeners for an event
 	 *
@@ -233,12 +233,12 @@ class pewEventDispatcher {
 	 */
 	public function getListeners($event) {
 		$event = $this->strToEvent($event);
-		
+
 		$this->checkEvent($event, 'Invalid event - can\'t get listeners.');
-		
+
 		return $event->getListeners();
 	}
-	
+
 	/**
 	 * Reset event
 	 *
@@ -250,7 +250,7 @@ class pewEventDispatcher {
 	 */
 	public function reset($event) {
 		$event = $this->strToEvent($event);
-		
+
 		$event->reset();
 	}
 }
